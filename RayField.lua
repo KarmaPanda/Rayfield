@@ -181,9 +181,9 @@ function ChangeTheme(ThemeName)
     Rayfield.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
     Rayfield.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
 
-    Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+    --[[Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
     Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-    Rayfield.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor
+    Rayfield.Main.Topbar.Theme.ImageColor3 = SelectedTheme.TextColor]] --
 
     for _, TabPage in ipairs(Elements:GetChildren()) do
         for _, Element in ipairs(TabPage:GetChildren()) do
@@ -758,13 +758,13 @@ function Hide()
     TweenService:Create(Topbar.UIStroke,
                         TweenInfo.new(0.5, Enum.EasingStyle.Quint),
                         {Transparency = 1}):Play()
-    for _, TopbarButton in ipairs(Topbar:GetChildren()) do
+    --[[for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
             TweenService:Create(TopbarButton,
                                 TweenInfo.new(0.5, Enum.EasingStyle.Quint),
                                 {ImageTransparency = 1}):Play()
         end
-    end
+    end]] --
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             TweenService:Create(tabbtn,
@@ -851,14 +851,14 @@ function Unhide()
     TweenService:Create(Main.Topbar.Title,
                         TweenInfo.new(0.5, Enum.EasingStyle.Quint),
                         {TextTransparency = 0}):Play()
-    if Minimised then spawn(Maximise) end
+    --[[if Minimised then spawn(Maximise) end
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
             TweenService:Create(TopbarButton,
                                 TweenInfo.new(0.7, Enum.EasingStyle.Quint),
                                 {ImageTransparency = 0.8}):Play()
         end
-    end
+    end]] --
     for _, tabbtn in ipairs(TabList:GetChildren()) do
         if tabbtn.ClassName == "Frame" and tabbtn.Name ~= "Placeholder" then
             if tostring(Elements.UIPageLayout.CurrentPage) == tabbtn.Title.Text then
@@ -3929,7 +3929,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
     end
 end)
 
-for _, TopbarButton in ipairs(Topbar:GetChildren()) do
+--[[for _, TopbarButton in ipairs(Topbar:GetChildren()) do
     if TopbarButton.ClassName == "ImageButton" then
         TopbarButton.MouseEnter:Connect(function()
             TweenService:Create(TopbarButton,
@@ -3949,7 +3949,7 @@ for _, TopbarButton in ipairs(Topbar:GetChildren()) do
                                 {ImageTransparency = 0.8}):Play()
         end)
     end
-end
+end]] --
 
 function RayfieldLibrary:LoadConfiguration()
     if CEnabled then
