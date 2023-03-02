@@ -39,3 +39,8 @@ luac.out
 *.x86_64
 *.hex
 
+# Shortcuts
+*.lnk
+
+# UI Testing
+test.lua
