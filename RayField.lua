@@ -3976,9 +3976,9 @@ function RayfieldLibrary:CreateWindow(Settings)
     TweenService:Create(Topbar.ChangeSize,
                         TweenInfo.new(0.7, Enum.EasingStyle.Quint),
                         {ImageTransparency = 0.8}):Play()
-    wait(0.1)
+    wait(0.1)]] --
     TweenService:Create(Topbar.Hide, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
-                        {ImageTransparency = 0.8}):Play()]] --
+                        {ImageTransparency = 0.8}):Play()
     wait(0.3)
     function Window:Prompt(PromptSettings)
         local PromptUI = Prompt.Prompt
