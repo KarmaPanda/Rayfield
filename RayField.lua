@@ -732,7 +732,7 @@ function Hide()
     Debounce = true
     RayfieldLibrary:Notify({
         Title = "Interface Hidden",
-        Content = "The interface has been hidden, you can unhide the interface by tapping RightShift",
+        Content = "The interface has been hidden, you can unhide the interface by pressing Home",
         Duration = 7
     })
     TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quint),
@@ -2793,7 +2793,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
                     if CheckingForKey then
                         if input.KeyCode ~= Enum.KeyCode.Unknown and
-                            input.KeyCode ~= Enum.KeyCode.RightShift then
+                            input.KeyCode ~= Enum.KeyCode.Home then
                             local SplitMessage = string.split(
                                                      tostring(input.KeyCode),
                                                      ".")
@@ -4115,7 +4115,7 @@ end)
 end)]] --
 
 UserInputService.InputBegan:Connect(function(input, processed)
-    if (input.KeyCode == Enum.KeyCode.RightShift and not processed) then
+    if (input.KeyCode == Enum.KeyCode.Home and not processed) then
         if Debounce then return end
         if Hidden then
             Hidden = false
