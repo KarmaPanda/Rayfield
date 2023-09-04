@@ -2793,7 +2793,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 
                     if CheckingForKey then
                         if input.KeyCode ~= Enum.KeyCode.Unknown and
-                            (input.KeyCode ~= Enum.KeyCode.Home or input.KeyCode ~= Enum.KeyCode.RightShift) then
+                            input.KeyCode ~= Enum.KeyCode.Home and input.KeyCode ~=
+                            Enum.KeyCode.RightShift then
                             local SplitMessage = string.split(
                                                      tostring(input.KeyCode),
                                                      ".")
@@ -4115,7 +4116,8 @@ end)
 end)]] --
 
 UserInputService.InputBegan:Connect(function(input, processed)
-    if (input.KeyCode == Enum.KeyCode.Home or input.KeyCode == Enum.KeyCode.RightShift) and not processed then
+    if (input.KeyCode == Enum.KeyCode.Home or input.KeyCode ==
+        Enum.KeyCode.RightShift) and not processed then
         if Debounce then return end
         if Hidden then
             Hidden = false
