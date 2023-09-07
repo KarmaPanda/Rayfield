@@ -1876,8 +1876,9 @@ function RayfieldLibrary:CreateWindow(Settings)
                         end
                         if InputSettings.NumbersOnly then
                             Input.InputFrame.InputBox.Text = Input.InputFrame
-                                                                 .InputBox.Text:gsub('[^0-9.<>]', '')
-                                                                 --'%D+', '')
+                                                                 .InputBox.Text:gsub(
+                                                                 '[^0-9.<>]', '')
+                            -- '%D+', '')
                         end
                     end)
             end
@@ -1969,29 +1970,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             Dropdown.List.Visible = false
 
-            if typeof(DropdownSettings.CurrentOption) == "string" then
-                DropdownSettings.CurrentOption = {
-                    DropdownSettings.CurrentOption
-                }
-            end
-
-            if not DropdownSettings.MultipleOptions then
-                DropdownSettings.CurrentOption = {
-                    DropdownSettings.CurrentOption[1]
-                }
-            end
-
-            if DropdownSettings.MultipleOptions then
-                if #DropdownSettings.CurrentOption == 1 then
-                    Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
-                elseif #DropdownSettings.CurrentOption == 0 then
-                    Dropdown.Selected.Text = "None"
-                else
-                    Dropdown.Selected.Text = "Various"
-                end
-            else
-                Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
-            end
+            Dropdown.Selected.Text = DropdownSettings.CurrentOption
 
             Dropdown.BackgroundTransparency = 1
             Dropdown.UIStroke.Transparency = 1
@@ -2311,31 +2290,8 @@ function RayfieldLibrary:CreateWindow(Settings)
             AddOptions(DropdownSettings.Options)
 
             function DropdownSettings:Set(NewOption)
+                Dropdown.Selected.Text = NewOption
                 DropdownSettings.CurrentOption = NewOption
-                if typeof(DropdownSettings.CurrentOption) == "string" then
-                    DropdownSettings.CurrentOption = {
-                        DropdownSettings.CurrentOption
-                    }
-                end
-
-                if not DropdownSettings.MultipleOptions then
-                    DropdownSettings.CurrentOption = {
-                        DropdownSettings.CurrentOption[1]
-                    }
-                end
-
-                if DropdownSettings.MultipleOptions then
-                    if #DropdownSettings.CurrentOption == 1 then
-                        Dropdown.Selected.Text =
-                            DropdownSettings.CurrentOption[1]
-                    elseif #DropdownSettings.CurrentOption == 0 then
-                        Dropdown.Selected.Text = "None"
-                    else
-                        Dropdown.Selected.Text = "Various"
-                    end
-                else
-                    Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
-                end
                 local Success, Response = pcall(function()
                     DropdownSettings.Callback(NewOption)
                 end)
