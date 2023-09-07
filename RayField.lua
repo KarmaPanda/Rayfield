@@ -2261,17 +2261,6 @@ function RayfieldLibrary:CreateWindow(Settings)
                     SaveConfiguration()
                 end)
             end
-            for _, droption in ipairs(Dropdown.List:GetChildren()) do
-                if droption.ClassName == "Frame" and droption.Name ~=
-                    "Placeholder" then
-                    if not table.find(DropdownSettings.CurrentOption,
-                                      droption.Name) then
-                        droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                    else
-                        droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-                    end
-                end
-            end
             function DropdownSettings:Add(Item, Selected)
                 AddOption(Item, Selected)
             end
