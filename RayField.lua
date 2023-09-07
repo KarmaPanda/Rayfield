@@ -1876,8 +1876,8 @@ function RayfieldLibrary:CreateWindow(Settings)
                         end
                         if InputSettings.NumbersOnly then
                             Input.InputFrame.InputBox.Text = Input.InputFrame
-                                                                 .InputBox.Text:gsub(
-                                                                 '%D+', '')
+                                                                 .InputBox.Text:gsub('[^0-9.<>]', '')
+                                                                 --'%D+', '')
                         end
                     end)
             end
