@@ -107,8 +107,7 @@ local CoreGui = game:GetService("CoreGui")
 -- Interface Management
 local Rayfield = game:GetObjects("rbxassetid://12701685028")[1]
 
--- studio
--- function gethui() return Rayfield end local http_request = nil local syn = {protect_gui = false,request = false,}local http = nil function writefile(tt,t,ttt)end function isfolder(t)end function makefolder(t)end function isfile(r)end function readfile(t)end
+Rayfield.Enabled = false
 
 if gethui then
     Rayfield.Parent = gethui()
@@ -197,7 +196,7 @@ function ChangeTheme(ThemeName)
     end
 
 end
-function ColorDragger() end
+
 local function AddDraggingFunctionality(DragPoint, Main)
     pcall(function()
         local Dragging, DragInput, MousePos, FramePos = false, false, false,
@@ -252,8 +251,8 @@ local function LoadConfiguration(Configuration)
                 else
                     if RayfieldLibrary.Flags[FlagName].CurrentValue or
                         RayfieldLibrary.Flags[FlagName].CurrentKeybind or
-                        RayfieldLibrary.Flags[FlagName].CurrentOption ~=
-                        FlagValue then
+                        RayfieldLibrary.Flags[FlagName].CurrentOption or
+                        RayfieldLibrary.Flags[FlagName].Color ~= FlagValue then
                         RayfieldLibrary.Flags[FlagName]:Set(FlagValue)
                     end
                 end
@@ -274,7 +273,8 @@ local function SaveConfiguration()
         if v.Type == "Colorpicker" then
             Data[i] = PackColor(v.CurrentValue)
         else
-            Data[i] = v.CurrentValue or v.CurrentKeybind or v.CurrentOption
+            Data[i] = v.CurrentValue or v.CurrentKeybind or v.CurrentOption or
+                          v.Color
         end
     end
     writefile(ConfigurationFolder .. "/" .. CFileName .. ConfigurationExtension,
@@ -292,10 +292,10 @@ local neon = (function() -- Open sourced neon module
         end
     end
     local RootParent = Camera
-    if false == nil then
+    if getgenv().SecureMode == nil then
         RootParent = Camera
     else
-        if not false then
+        if not getgenv().SecureMode then
             RootParent = Camera
         else
             RootParent = nil
@@ -320,7 +320,7 @@ local neon = (function() -- Open sourced neon module
         local acos, max, pi, sqrt = math.acos, math.max, math.pi, math.sqrt
         local sz = 0.2
 
-        local function DrawTriangle(v1, v2, v3, p0, p1)
+        function DrawTriangle(v1, v2, v3, p0, p1)
             local s1 = (v1 - v2).magnitude
             local s2 = (v2 - v3).magnitude
             local s3 = (v3 - v1).magnitude
@@ -538,7 +538,7 @@ function RayfieldLibrary:Notify(NotificationSettings)
         Notification.Visible = true
 
         local blurlight = nil
-        if not false then
+        if not getgenv().SecureMode then
             blurlight = Instance.new("DepthOfFieldEffect",
                                      game:GetService("Lighting"))
             blurlight.Enabled = true
@@ -623,12 +623,12 @@ function RayfieldLibrary:Notify(NotificationSettings)
         wait(0.2)
 
         -- Requires Graphics Level 8-10
-        if false == nil then
+        if getgenv().SecureMode == nil then
             TweenService:Create(Notification,
                                 TweenInfo.new(0.3, Enum.EasingStyle.Quint),
                                 {BackgroundTransparency = 0.4}):Play()
         else
-            if not false then
+            if not getgenv().SecureMode then
                 TweenService:Create(Notification,
                                     TweenInfo.new(0.3, Enum.EasingStyle.Quint),
                                     {BackgroundTransparency = 0.4}):Play()
@@ -720,7 +720,7 @@ function RayfieldLibrary:Notify(NotificationSettings)
                             TweenInfo.new(0.6, Enum.EasingStyle.Quint),
                             {TextTransparency = 1}):Play()
         wait(0.2)
-        if not false then
+        if not getgenv().SecureMode then
             neon:UnbindFrame(Notification.BlurModule)
             blurlight:Destroy()
         end
@@ -851,7 +851,7 @@ function Unhide()
     TweenService:Create(Main.Topbar.Title,
                         TweenInfo.new(0.5, Enum.EasingStyle.Quint),
                         {TextTransparency = 0}):Play()
-    -- if Minimised then spawn(Maximise) end
+    if Minimised then spawn(Maximise) end
     for _, TopbarButton in ipairs(Topbar:GetChildren()) do
         if TopbarButton.ClassName == "ImageButton" then
             TweenService:Create(TopbarButton,
@@ -924,11 +924,10 @@ function Unhide()
                                                 {TextTransparency = 0}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
-                            if child.Name ~= 'Description' and
-                                (child.ClassName == "Frame" or child.ClassName ==
-                                    "TextLabel" or child.ClassName == "TextBox" or
-                                    child.ClassName == "ImageButton" or
-                                    child.ClassName == "ImageLabel") then
+                            if child.ClassName == "Frame" or child.ClassName ==
+                                "TextLabel" or child.ClassName == "TextBox" or
+                                child.ClassName == "ImageButton" or
+                                child.ClassName == "ImageLabel" then
                                 child.Visible = true
                             end
                         end
@@ -1028,7 +1027,7 @@ SearchBar.Clear.MouseButton1Down:Connect(function()
     SearchBar.Input.Text = ''
 end)
 
---[[function Maximise()
+function Maximise()
     Debounce = true
     Topbar.ChangeSize.Image = "rbxassetid://" .. 10137941941
 
@@ -1080,11 +1079,10 @@ end)
                                                 {TextTransparency = 0}):Play()
                         end
                         for _, child in ipairs(element:GetChildren()) do
-                            if child.Name ~= 'Description' and
-                                (child.ClassName == "Frame" or child.ClassName ==
-                                    "TextLabel" or child.ClassName == "TextBox" or
-                                    child.ClassName == "ImageButton" or
-                                    child.ClassName == "ImageLabel") then
+                            if child.ClassName == "Frame" or child.ClassName ==
+                                "TextLabel" or child.ClassName == "TextBox" or
+                                child.ClassName == "ImageButton" or
+                                child.ClassName == "ImageLabel" then
                                 child.Visible = true
                             end
                         end
@@ -1227,7 +1225,7 @@ function Minimise()
 
     wait(0.2)
     Debounce = false
-end]] --
+end
 
 function RayfieldLibrary:CreateWindow(Settings)
     local Passthrough = false
@@ -1309,330 +1307,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
         end
     end
-
-    if Settings.KeySystem then
-        if not Settings.KeySettings then
-            Passthrough = true
-            return
-        end
-
-        if not isfolder(RayfieldFolder .. "/Key System") then
-            makefolder(RayfieldFolder .. "/Key System")
-        end
-
-        if Settings.KeySettings.GrabKeyFromSite then
-            local Success, Response = pcall(function()
-                Settings.KeySettings.Key =
-                    game:HttpGet(Settings.KeySettings.Key)
-            end)
-            if not Success then
-                print("Rayfield | " .. Settings.KeySettings.Key .. " Error " ..
-                          tostring(Response))
-            end
-        end
-
-        if not Settings.KeySettings.FileName then
-            Settings.KeySettings.FileName = "No file name specified"
-        end
-
-        if isfile(RayfieldFolder .. "/Key System" .. "/" ..
-                      Settings.KeySettings.FileName .. ConfigurationExtension) then
-            if readfile(RayfieldFolder .. "/Key System" .. "/" ..
-                            Settings.KeySettings.FileName ..
-                            ConfigurationExtension) == Settings.KeySettings.Key then
-                Passthrough = true
-            end
-        end
-
-        if not Passthrough then
-            local AttemptsRemaining = math.random(2, 6)
-            Rayfield.Enabled = false
-            local KeyUI = game:GetObjects("rbxassetid://11695805160")[1]
-            KeyUI.Enabled = true
-            if gethui then
-                KeyUI.Parent = gethui()
-            elseif syn.protect_gui then
-                syn.protect_gui(Rayfield)
-                KeyUI.Parent = CoreGui
-            else
-                KeyUI.Parent = CoreGui
-            end
-
-            if gethui then
-                for _, Interface in ipairs(gethui():GetChildren()) do
-                    if Interface.Name == KeyUI.Name and Interface ~= KeyUI then
-                        Interface.Enabled = false
-                        Interface.Name = "KeyUI-Old"
-                    end
-                end
-            else
-                for _, Interface in ipairs(CoreGui:GetChildren()) do
-                    if Interface.Name == KeyUI.Name and Interface ~= KeyUI then
-                        Interface.Enabled = false
-                        Interface.Name = "KeyUI-Old"
-                    end
-                end
-            end
-
-            local KeyMain = KeyUI.Main
-            KeyMain.Title.Text = Settings.KeySettings.Title or Settings.Name
-            KeyMain.Subtitle.Text = Settings.KeySettings.Subtitle or
-                                        "Key System"
-            KeyMain.NoteMessage.Text = Settings.KeySettings.Note or
-                                           "No instructions"
-
-            KeyMain.Size = UDim2.new(0, 467, 0, 175)
-            KeyMain.BackgroundTransparency = 1
-            KeyMain.EShadow.ImageTransparency = 1
-            KeyMain.Title.TextTransparency = 1
-            KeyMain.Subtitle.TextTransparency = 1
-            KeyMain.KeyNote.TextTransparency = 1
-            KeyMain.Input.BackgroundTransparency = 1
-            KeyMain.Input.UIStroke.Transparency = 1
-            KeyMain.Input.InputBox.TextTransparency = 1
-            KeyMain.NoteTitle.TextTransparency = 1
-            KeyMain.NoteMessage.TextTransparency = 1
-            KeyMain.Hide.ImageTransparency = 1
-
-            TweenService:Create(KeyMain,
-                                TweenInfo.new(0.6, Enum.EasingStyle.Quint),
-                                {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain,
-                                TweenInfo.new(0.6, Enum.EasingStyle.Quint),
-                                {Size = UDim2.new(0, 500, 0, 187)}):Play()
-            TweenService:Create(KeyMain.EShadow,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {ImageTransparency = 0.5}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.Title,
-                                TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Subtitle,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.KeyNote,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {BackgroundTransparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.UIStroke,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {Transparency = 0}):Play()
-            TweenService:Create(KeyMain.Input.InputBox,
-                                TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            wait(0.05)
-            TweenService:Create(KeyMain.NoteTitle,
-                                TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            TweenService:Create(KeyMain.NoteMessage,
-                                TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                {TextTransparency = 0}):Play()
-            wait(0.15)
-            TweenService:Create(KeyMain.Hide,
-                                TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                {ImageTransparency = 0.3}):Play()
-
-            KeyUI.Main.Input.InputBox.FocusLost:Connect(function()
-                if KeyMain.Input.InputBox.Text == Settings.KeySettings.Key then
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                               Enum.EasingStyle
-                                                                   .Quint),
-                                        {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                               Enum.EasingStyle
-                                                                   .Quint),
-                                        {Size = UDim2.new(0, 467, 0, 175)})
-                        :Play()
-                    TweenService:Create(KeyMain.EShadow, TweenInfo.new(0.5,
-                                                                       Enum.EasingStyle
-                                                                           .Quint),
-                                        {ImageTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Title, TweenInfo.new(0.4,
-                                                                     Enum.EasingStyle
-                                                                         .Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Subtitle, TweenInfo.new(0.5,
-                                                                        Enum.EasingStyle
-                                                                            .Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5,
-                                                                       Enum.EasingStyle
-                                                                           .Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input, TweenInfo.new(0.5,
-                                                                     Enum.EasingStyle
-                                                                         .Quint),
-                                        {BackgroundTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.UIStroke, TweenInfo.new(
-                                            0.5, Enum.EasingStyle.Quint),
-                                        {Transparency = 1}):Play()
-                    TweenService:Create(KeyMain.Input.InputBox, TweenInfo.new(
-                                            0.5, Enum.EasingStyle.Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(0.4,
-                                                                         Enum.EasingStyle
-                                                                             .Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(0.4,
-                                                                           Enum.EasingStyle
-                                                                               .Quint),
-                                        {TextTransparency = 1}):Play()
-                    TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4,
-                                                                    Enum.EasingStyle
-                                                                        .Quint),
-                                        {ImageTransparency = 1}):Play()
-                    delay(.4, function()
-                        KeyMain.Hide.Visible = false
-                    end)
-                    wait(0.51)
-                    Passthrough = true
-                    if Settings.KeySettings.SaveKey then
-                        if writefile then
-                            writefile(RayfieldFolder .. "/Key System" .. "/" ..
-                                          Settings.KeySettings.FileName ..
-                                          ConfigurationExtension,
-                                      Settings.KeySettings.Key)
-                        end
-                        RayfieldLibrary:Notify({
-                            Title = "Key System",
-                            Content = "The key for this script has been saved successfully"
-                        })
-                    end
-                else
-                    if AttemptsRemaining == 0 then
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                                   Enum.EasingStyle
-                                                                       .Quint),
-                                            {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                                   Enum.EasingStyle
-                                                                       .Quint),
-                                            {Size = UDim2.new(0, 467, 0, 175)})
-                            :Play()
-                        TweenService:Create(KeyMain.Shadow.Image,
-                                            TweenInfo.new(0.5, Enum.EasingStyle
-                                                              .Quint),
-                                            {ImageTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Title, TweenInfo.new(0.4,
-                                                                         Enum.EasingStyle
-                                                                             .Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Subtitle,
-                                            TweenInfo.new(0.5, Enum.EasingStyle
-                                                              .Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.KeyNote, TweenInfo.new(0.5,
-                                                                           Enum.EasingStyle
-                                                                               .Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input, TweenInfo.new(0.5,
-                                                                         Enum.EasingStyle
-                                                                             .Quint),
-                                            {BackgroundTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.UIStroke,
-                                            TweenInfo.new(0.5, Enum.EasingStyle
-                                                              .Quint),
-                                            {Transparency = 1}):Play()
-                        TweenService:Create(KeyMain.Input.InputBox,
-                                            TweenInfo.new(0.5, Enum.EasingStyle
-                                                              .Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteTitle, TweenInfo.new(
-                                                0.4, Enum.EasingStyle.Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.NoteMessage, TweenInfo.new(
-                                                0.4, Enum.EasingStyle.Quint),
-                                            {TextTransparency = 1}):Play()
-                        TweenService:Create(KeyMain.Hide, TweenInfo.new(0.4,
-                                                                        Enum.EasingStyle
-                                                                            .Quint),
-                                            {ImageTransparency = 1}):Play()
-                        wait(0.45)
-                        game.Players.LocalPlayer:Kick("No Attempts Remaining")
-                        game:Shutdown()
-                    end
-                    KeyMain.Input.InputBox.Text = ""
-                    AttemptsRemaining = AttemptsRemaining - 1
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                               Enum.EasingStyle
-                                                                   .Quint),
-                                        {Size = UDim2.new(0, 467, 0, 175)})
-                        :Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4,
-                                                               Enum.EasingStyle
-                                                                   .Elastic), {
-                        Position = UDim2.new(0.495, 0, 0.5, 0)
-                    }):Play()
-                    wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4,
-                                                               Enum.EasingStyle
-                                                                   .Elastic), {
-                        Position = UDim2.new(0.505, 0, 0.5, 0)
-                    }):Play()
-                    wait(0.1)
-                    TweenService:Create(KeyMain, TweenInfo.new(0.4,
-                                                               Enum.EasingStyle
-                                                                   .Quint),
-                                        {Position = UDim2.new(0.5, 0, 0.5, 0)})
-                        :Play()
-                    TweenService:Create(KeyMain, TweenInfo.new(0.6,
-                                                               Enum.EasingStyle
-                                                                   .Quint),
-                                        {Size = UDim2.new(0, 500, 0, 187)})
-                        :Play()
-                end
-            end)
-
-            KeyMain.Hide.MouseButton1Click:Connect(function()
-                TweenService:Create(KeyMain,
-                                    TweenInfo.new(0.6, Enum.EasingStyle.Quint),
-                                    {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain,
-                                    TweenInfo.new(0.6, Enum.EasingStyle.Quint),
-                                    {Size = UDim2.new(0, 467, 0, 175)}):Play()
-                TweenService:Create(KeyMain.EShadow,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {ImageTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Title,
-                                    TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Subtitle,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.KeyNote,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {BackgroundTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.UIStroke,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {Transparency = 1}):Play()
-                TweenService:Create(KeyMain.Input.InputBox,
-                                    TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteTitle,
-                                    TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.NoteMessage,
-                                    TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                    {TextTransparency = 1}):Play()
-                TweenService:Create(KeyMain.Hide,
-                                    TweenInfo.new(0.4, Enum.EasingStyle.Quint),
-                                    {ImageTransparency = 1}):Play()
-                wait(0.51)
-                RayfieldLibrary:Destroy()
-                KeyUI:Destroy()
-            end)
-        else
-            Passthrough = true
-        end
-    end
-    if Settings.KeySystem then repeat wait() until Passthrough end
-
     Notifications.Template.Visible = false
     Notifications.Visible = true
     Rayfield.Enabled = true
@@ -2080,7 +1754,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             Paragraph.Content.Size = UDim2.new(0, 438, 0,
                                                Paragraph.Content.TextBounds.Y)
-            -- Paragraph.Content.Position = UDim2.new(1, -10, 0,76)
+            Paragraph.Content.Position = UDim2.new(1, -10, 0.575, 0)
             Paragraph.Size = UDim2.new(1, -10, 0,
                                        Paragraph.Content.TextBounds.Y + 40)
 
@@ -2295,7 +1969,29 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             Dropdown.List.Visible = false
 
-            Dropdown.Selected.Text = DropdownSettings.CurrentOption
+            if typeof(DropdownSettings.CurrentOption) == "string" then
+                DropdownSettings.CurrentOption = {
+                    DropdownSettings.CurrentOption
+                }
+            end
+
+            if not DropdownSettings.MultipleOptions then
+                DropdownSettings.CurrentOption = {
+                    DropdownSettings.CurrentOption[1]
+                }
+            end
+
+            if DropdownSettings.MultipleOptions then
+                if #DropdownSettings.CurrentOption == 1 then
+                    Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
+                elseif #DropdownSettings.CurrentOption == 0 then
+                    Dropdown.Selected.Text = "None"
+                else
+                    Dropdown.Selected.Text = "Various"
+                end
+            else
+                Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
+            end
 
             Dropdown.BackgroundTransparency = 1
             Dropdown.UIStroke.Transparency = 1
@@ -2580,10 +2276,22 @@ function RayfieldLibrary:CreateWindow(Settings)
                                             {Rotation = 180}):Play()
                         wait(0.35)
                         Dropdown.List.Visible = false
-                        Debounce = false
-                        SaveConfiguration()
+
                     end
+                    Debounce = false
+                    SaveConfiguration()
                 end)
+            end
+            for _, droption in ipairs(Dropdown.List:GetChildren()) do
+                if droption.ClassName == "Frame" and droption.Name ~=
+                    "Placeholder" then
+                    if not table.find(DropdownSettings.CurrentOption,
+                                      droption.Name) then
+                        droption.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                    else
+                        droption.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                    end
+                end
             end
             function DropdownSettings:Add(Item, Selected)
                 AddOption(Item, Selected)
@@ -2603,8 +2311,31 @@ function RayfieldLibrary:CreateWindow(Settings)
             AddOptions(DropdownSettings.Options)
 
             function DropdownSettings:Set(NewOption)
-                Dropdown.Selected.Text = NewOption
                 DropdownSettings.CurrentOption = NewOption
+                if typeof(DropdownSettings.CurrentOption) == "string" then
+                    DropdownSettings.CurrentOption = {
+                        DropdownSettings.CurrentOption
+                    }
+                end
+
+                if not DropdownSettings.MultipleOptions then
+                    DropdownSettings.CurrentOption = {
+                        DropdownSettings.CurrentOption[1]
+                    }
+                end
+
+                if DropdownSettings.MultipleOptions then
+                    if #DropdownSettings.CurrentOption == 1 then
+                        Dropdown.Selected.Text =
+                            DropdownSettings.CurrentOption[1]
+                    elseif #DropdownSettings.CurrentOption == 0 then
+                        Dropdown.Selected.Text = "None"
+                    else
+                        Dropdown.Selected.Text = "Various"
+                    end
+                else
+                    Dropdown.Selected.Text = DropdownSettings.CurrentOption[1]
+                end
                 local Success, Response = pcall(function()
                     DropdownSettings.Callback(NewOption)
                 end)
@@ -3930,7 +3661,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
     Elements.Visible = true
 
-    wait(1.2)
+    wait(0.7)
     TweenService:Create(LoadingFrame.Title,
                         TweenInfo.new(0.5, Enum.EasingStyle.Quint),
                         {TextTransparency = 1}):Play()
@@ -3954,7 +3685,7 @@ function RayfieldLibrary:CreateWindow(Settings)
     -- Topbar.Theme.ImageTransparency = 1
     -- Topbar.ChangeSize.ImageTransparency = 1
     Topbar.Hide.ImageTransparency = 1
-    wait(0.8)
+    wait(0.5)
     Topbar.Visible = true
     TweenService:Create(Topbar, TweenInfo.new(0.7, Enum.EasingStyle.Quint),
                         {BackgroundTransparency = 0}):Play()
@@ -4168,5 +3899,7 @@ function RayfieldLibrary:LoadConfiguration()
         end)
     end
 end
+
+task.delay(3.5, RayfieldLibrary.LoadConfiguration, RayfieldLibrary)
 
 return RayfieldLibrary
