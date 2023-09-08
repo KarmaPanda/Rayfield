@@ -1875,10 +1875,10 @@ function RayfieldLibrary:CreateWindow(Settings)
                                                                  InputSettings.CharacterLimit)
                         end
                         if InputSettings.NumbersOnly then
+                            -- TODO: Need to fix for duplicated . or -
                             Input.InputFrame.InputBox.Text = Input.InputFrame
                                                                  .InputBox.Text:gsub(
-                                                                 '[^0-9.<>]', '')
-                            -- '%D+', '')
+                                                                 '[^0-9.-]', '')
                         end
                     end)
             end
