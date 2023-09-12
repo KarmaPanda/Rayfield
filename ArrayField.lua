@@ -2829,7 +2829,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                                                                         .Quint),
                                             {Size = UDim2.new(0, 465, 0, 44)})
                             :Play()
-                        for _, item in ipairs(Dropdown.List:GetChildren()) do
+                        --[[for _, item in ipairs(Dropdown.List:GetChildren()) do
                             if item.ClassName == "Frame" and item.Name ~=
                                 "Template" and item.Name ~= "PlaceHolder" and
                                 item.Name ~= "-SearchBar" then
@@ -2850,7 +2850,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                                                     {TextTransparency = 1})
                                     :Play()
                             end
-                        end
+                        end]] --
                         TweenService:Create(Dropdown.List, TweenInfo.new(0.3,
                                                                          Enum.EasingStyle
                                                                              .Quint),
