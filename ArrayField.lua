@@ -5475,30 +5475,6 @@ Topbar.Hide.MouseButton1Click:Connect(function()
     end
 end)
 
-local ContextActionService = game:GetService("ContextActionService")
-
-ContextActionService:BindAction("Field",
-                                function(name, inputState, inputObject)
-    if Debounce then return end
-    if Hidden then
-        Hidden = false
-        Unhide()
-    else
-        if not SearchHided then spawn(CloseSearch) end
-        Hidden = true
-        Hide()
-    end
-end, true)
-
-local FieldScreen = Instance.new("ScreenGui")
-FieldScreen.Parent = gethui and gethui()
-
-local Field = ContextActionService:GetButton("Field")
-Field.Parent.Parent = FieldScreen
-Field.ActionTitle.Text = "ArrayField"
-Field.AnchorPoint = Vector2.new(1, 1)
-Field.Position = UDim2.new(0.95, 0, 0.95, 0)
-
 UserInputService.InputBegan:Connect(function(input, processed)
     if (input.KeyCode == Enum.KeyCode.Home or input.KeyCode ==
         Enum.KeyCode.RightShift) and not processed then
