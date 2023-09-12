@@ -159,6 +159,7 @@ local Prompt = Main.Prompt
 local NotePrompt = Main.NotePrompt
 
 Rayfield.DisplayOrder = 100
+Elements.UIPageLayout.TouchInputEnabled = false
 LoadingFrame.Version.Text = Release
 
 -- Variables
@@ -211,10 +212,23 @@ function ChangeTheme(ThemeName)
 end
 local function AddDraggingFunctionality(DragPoint, Main)
     pcall(function()
-        local Dragging, DragInput, MousePos, FramePos = false, false, false,
-                                                        false
+        local Dragging, DragInput, MousePos, FramePos, Conduct = false, false,
+                                                                 false, false,
+                                                                 false
+        UserInputService.InputBegan:Connect(function(Input)
+            if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
+                Input.UserInputType == Enum.UserInputType.Touch) then
+                Conduct = true
+                Input.Changed:Connect(function()
+                    if Input.UserInputState == Enum.UserInputState.End then
+                        Conduct = false
+                    end
+                end)
+            end
+        end)
         DragPoint.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
+                Input.UserInputType == Enum.UserInputType.Touch) and not Conduct then
                 Dragging = true
                 MousePos = Input.Position
                 FramePos = Main.Position
@@ -227,7 +241,8 @@ local function AddDraggingFunctionality(DragPoint, Main)
             end
         end)
         DragPoint.InputChanged:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseMovement then
+            if (Input.UserInputType == Enum.UserInputType.MouseMovement or
+                Input.UserInputType == Enum.UserInputType.Touch) then
                 DragInput = Input
             end
         end)
@@ -240,6 +255,16 @@ local function AddDraggingFunctionality(DragPoint, Main)
                                     {
                     Position = UDim2.new(FramePos.X.Scale,
                                          FramePos.X.Offset + Delta.X,
+                                         FramePos.Y.Scale,
+                                         FramePos.Y.Offset + Delta.Y)
+                }):Play()
+                TweenService:Create(InfoPrompt, TweenInfo.new(0.6,
+                                                              Enum.EasingStyle
+                                                                  .Quint,
+                                                              Enum.EasingDirection
+                                                                  .Out), {
+                    Position = UDim2.new(FramePos.X.Scale,
+                                         FramePos.X.Offset + Delta.X + 370,
                                          FramePos.Y.Scale,
                                          FramePos.Y.Offset + Delta.Y)
                 }):Play()
@@ -1103,7 +1128,11 @@ function CloseSearch()
     TweenService:Create(SearchBar.Input,
                         TweenInfo.new(0.3, Enum.EasingStyle.Quint),
                         {TextTransparency = 1}):Play()
-    delay(.3, function() SearchBar.Input.Visible = false end)
+    delay(.3, function()
+        SearchBar.Input.Visible = false
+        SearchBar.Input.Active = false
+        SearchBar.Input.ClearTextOnFocus = true
+    end)
     wait(0.5)
     SearchBar.Visible = false
     Debounce = false
@@ -1112,6 +1141,8 @@ function OpenSearch()
     Debounce = true
     SearchBar.Visible = true
     SearchBar.Input.Visible = true
+    SearchBar.Input.ClearTextOnFocus = false
+    SearchBar.Input.Active = true
     TweenService:Create(SearchBar, TweenInfo.new(0.4, Enum.EasingStyle.Quint), {
         BackgroundTransparency = 0,
         Size = UDim2.new(0, 480, 0, 40)
@@ -2184,6 +2215,21 @@ function RayfieldLibrary:CreateWindow(Settings)
             return SectionValue
         end
 
+        -- Spacing
+        function Tab:CreateSpacing(SectionParent, Size)
+            local Spacing = Elements.Template.SectionSpacing:Clone()
+            Spacing.Visible = true
+            Spacing.Parent = TabPage
+
+            Spacing.Size = UDim2.fromOffset(475, Size or 6)
+
+            if SectionParent then
+                Spacing.Parent = SectionParent.Holder
+            else
+                Spacing.Parent = TabPage
+            end
+        end
+
         -- Label
         function Tab:CreateLabel(LabelText, SectionParent)
             local LabelValue = {}
@@ -2352,17 +2398,30 @@ function RayfieldLibrary:CreateWindow(Settings)
                                                                  InputSettings.CharacterLimit)
                         end
                         if InputSettings.NumbersOnly then
+                            -- TODO: Need to fix for duplicated . or -
                             Input.InputFrame.InputBox.Text = Input.InputFrame
                                                                  .InputBox.Text:gsub(
-                                                                 '%D+', '')
+                                                                 '[^0-9.-]', '')
                         end
                     end)
             end
 
             Input.InputFrame.InputBox.FocusLost:Connect(function(enter)
+                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55,
+                                                                    Enum.EasingStyle
+                                                                        .Quint,
+                                                                    Enum.EasingDirection
+                                                                        .Out), {
+                    Size = UDim2.new(0,
+                                     Input.InputFrame.InputBox.TextBounds.X + 24,
+                                     0, 30)
+                }):Play()
                 if InputSettings.OnEnter and not enter then
                     if InputSettings.RemoveTextAfterFocusLost then
-                        Input.InputFrame.InputBox.Text = ""
+                        Input.InputFrame.InputBox.Text = "";
+                        Input.InputFrame.Size =
+                            UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X +
+                                          24, 0, 30)
                     end
                     return
                 end
@@ -2432,6 +2491,15 @@ function RayfieldLibrary:CreateWindow(Settings)
                 end)
 
             Input.InputFrame.InputBox.Focused:Connect(function()
+                TweenService:Create(Input.InputFrame, TweenInfo.new(0.55,
+                                                                    Enum.EasingStyle
+                                                                        .Quint,
+                                                                    Enum.EasingDirection
+                                                                        .Out), {
+                    Size = UDim2.new(0,
+                                     Input.InputFrame.InputBox.TextBounds.X + 24,
+                                     0, 30)
+                }):Play()
                 if InputSettings.Locked then
                     Input.InputFrame.InputBox:ReleaseFocus()
                     return
@@ -2547,6 +2615,52 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             Dropdown.Toggle.Rotation = 180
 
+            local function GetOptionInstance(Name)
+                for i, v in pairs(Dropdown.List:GetChildren()) do
+                    if typeof(Name) == "Instance" and v.Name == Name.Name or
+                        v.Name == Name or v == Name then
+                        TweenService:Create(v, TweenInfo.new(0.3,
+                                                             Enum.EasingStyle
+                                                                 .Quint), {
+                            BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                        }):Play()
+                        return v
+                    end
+                end
+            end
+
+            local function RefreshSelected(boolean)
+                if #DropdownSettings.Items.Selected > 0 then
+                    local NT = {}
+                    for _, kj in ipairs(DropdownSettings.Items.Selected) do
+                        if boolean and typeof(kj.Option) == "Instance" then
+                            for _, v in pairs(Dropdown.List:GetChildren()) do
+                                if v.ClassName == "Frame" and v.Name ~=
+                                    'PlaceHolder' and v.Name ~= "-SearchBar" then
+                                    TweenService:Create(v, TweenInfo.new(0.3,
+                                                                         Enum.EasingStyle
+                                                                             .Quint),
+                                                        {
+                                        BackgroundColor3 = Color3.fromRGB(30,
+                                                                          30, 30)
+                                    }):Play()
+                                end
+                            end
+                            TweenService:Create(kj.Option, TweenInfo.new(0.3,
+                                                                         Enum.EasingStyle
+                                                                             .Quint),
+                                                {
+                                BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                            }):Play()
+                        end
+                        NT[#NT + 1] = kj.Name
+                    end
+                    Dropdown.Selected.Text = table.concat(NT, ", ")
+                else
+                    Dropdown.Selected.Text = "Select an option"
+                end
+            end
+
             Dropdown.Interact.MouseButton1Click:Connect(function()
                 if DropdownSettings.Locked then return end
                 TweenService:Create(Dropdown,
@@ -2654,35 +2768,35 @@ function RayfieldLibrary:CreateWindow(Settings)
                             if InputText == "" or InputText == " " or
                                 string.find(string.upper(item.Name), InputText) ~=
                                 nil then
-                                TweenService:Create(item, TweenInfo.new(0.3,
+                                TweenService:Create(item, TweenInfo.new(0.15,
                                                                         Enum.EasingStyle
                                                                             .Quint),
                                                     {BackgroundTransparency = 0})
                                     :Play()
                                 TweenService:Create(item.UIStroke,
-                                                    TweenInfo.new(0.3,
+                                                    TweenInfo.new(0.15,
                                                                   Enum.EasingStyle
                                                                       .Quint),
                                                     {Transparency = 0}):Play()
                                 TweenService:Create(item.Title,
-                                                    TweenInfo.new(0.3,
+                                                    TweenInfo.new(0.15,
                                                                   Enum.EasingStyle
                                                                       .Quint),
                                                     {TextTransparency = 0})
                                     :Play()
                             else
-                                TweenService:Create(item, TweenInfo.new(0.3,
+                                TweenService:Create(item, TweenInfo.new(0.15,
                                                                         Enum.EasingStyle
                                                                             .Quint),
                                                     {BackgroundTransparency = 1})
                                     :Play()
                                 TweenService:Create(item.UIStroke,
-                                                    TweenInfo.new(0.3,
+                                                    TweenInfo.new(0.15,
                                                                   Enum.EasingStyle
                                                                       .Quint),
                                                     {Transparency = 1}):Play()
                                 TweenService:Create(item.Title,
-                                                    TweenInfo.new(0.3,
+                                                    TweenInfo.new(0.15,
                                                                   Enum.EasingStyle
                                                                       .Quint),
                                                     {TextTransparency = 1})
@@ -2745,6 +2859,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                     end)
                 DropdownSettings.Items[Option] = {
                     Option = DropdownOption,
+                    Name = Option.Name or Option,
                     Selected = false
                 }
                 local OptionInTable = DropdownSettings.Items[Option]
@@ -2788,6 +2903,12 @@ function RayfieldLibrary:CreateWindow(Settings)
                 DropdownOption.Interact.ZIndex = 50
                 DropdownOption.Interact.MouseButton1Click:Connect(function()
                     if DropdownSettings.Locked then return end
+                    if DropdownOption.BackgroundColor3 ==
+                        Color3.fromRGB(30, 30, 30) then
+                        OptionInTable.Selected = false
+                    else
+                        OptionInTable.Selected = true
+                    end
                     if OptionInTable.Selected then
                         OptionInTable.Selected = false
                         table.remove(DropdownSettings.Items.Selected,
@@ -2800,16 +2921,29 @@ function RayfieldLibrary:CreateWindow(Settings)
                                             {
                             BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                         }):Play()
+                        local Success, Response = pcall(function()
+                            DropdownSettings.Callback(Option,
+                                                      DropdownSettings.Items
+                                                          .Selected)
+                        end)
+                        if not Success then
+                            Error('Callback Error')
+                            print("ArrayField | " .. DropdownSettings.Name ..
+                                      " Callback Error " .. tostring(Response))
+                        end
                         SaveConfiguration()
                         return
                     end
                     if not Multi and DropdownSettings.Items.Selected[1] then
                         DropdownSettings.Items.Selected[1].Selected = false
-                        TweenService:Create(
-                            DropdownSettings.Items.Selected[1].Option,
-                            TweenInfo.new(0.3, Enum.EasingStyle.Quint),
-                            {BackgroundColor3 = Color3.fromRGB(30, 30, 30)})
-                            :Play()
+                        if typeof(DropdownSettings.Items.Selected[1]["Option"]) ==
+                            "Instance" then
+                            TweenService:Create(
+                                DropdownSettings.Items.Selected[1].Option,
+                                TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+                                {BackgroundColor3 = Color3.fromRGB(30, 30, 30)})
+                                :Play()
+                        end
                     end
                     if not (Multi) then
                         DropdownSettings.Items.Selected = {OptionInTable}
@@ -2821,7 +2955,8 @@ function RayfieldLibrary:CreateWindow(Settings)
                     end
 
                     local Success, Response = pcall(function()
-                        DropdownSettings.Callback(Option)
+                        DropdownSettings.Callback(Option, DropdownSettings.Items
+                                                      .Selected)
                     end)
                     if not Success then
                         Error('Callback Error')
@@ -2833,12 +2968,14 @@ function RayfieldLibrary:CreateWindow(Settings)
 
                     if not (Multi) then
                         for _, op in ipairs(DropdownSettings.Items.Selected) do
-                            TweenService:Create(op.Option, TweenInfo.new(0.3,
-                                                                         Enum.EasingStyle
-                                                                             .Quint),
-                                                {
-                                BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                            }):Play()
+                            if typeof(op) == "Instance" then
+                                TweenService:Create(op.Option, TweenInfo.new(
+                                                        0.3,
+                                                        Enum.EasingStyle.Quint),
+                                                    {
+                                    BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                                }):Play()
+                            end
                         end
                     end
                     TweenService:Create(DropdownOption.UIStroke, TweenInfo.new(
@@ -2864,9 +3001,9 @@ function RayfieldLibrary:CreateWindow(Settings)
                             :Play()
                         for _, DropdownOpt in
                             ipairs(Dropdown.List:GetChildren()) do
-                            if DropdownOpt.ClassName == "Frame" and DropdownOpt ~=
-                                Dropdown.List.PlaceHolder and DropdownOpt ~=
-                                SearchBar then
+                            if DropdownOpt.ClassName == "Frame" and
+                                DropdownOpt.Name ~= "PlaceHolder" and
+                                DropdownOpt ~= SearchBar then
                                 TweenService:Create(DropdownOpt, TweenInfo.new(
                                                         0.3,
                                                         Enum.EasingStyle.Quint),
@@ -2994,23 +3131,32 @@ function RayfieldLibrary:CreateWindow(Settings)
                     end
                 end
                 DropdownSettings.Items.Selected = Confirmed
-                RefreshSelected()
+                RefreshSelected(true)
                 -- Dropdown.Selected.Text = NewText
             end
             function DropdownSettings:Error(text) Error(text) end
             function DropdownSettings:Refresh(NewOptions, Selecteds)
                 DropdownSettings.Items = {}
                 DropdownSettings.Items.Selected = {}
+                local Success, Response = pcall(function()
+                    DropdownSettings.Callback(NewOptions,
+                                              DropdownSettings.Items.Selected)
+                end)
+                if not Success then
+                    Error('Callback Error')
+                    print("ArrayField | " .. DropdownSettings.Name ..
+                              " Callback Error " .. tostring(Response))
+                end
                 for _, option in ipairs(Dropdown.List:GetChildren()) do
                     if option.ClassName == "Frame" and option ~= SearchBar and
-                        option ~= Dropdown.List.PlaceHolder then
+                        option.Name ~= "Placeholder" then
                         option:Destroy()
                     end
                 end
                 AddOptions(NewOptions, Selecteds)
             end
             function DropdownSettings:Remove(Item)
-                if Item ~= Dropdown.List.PlaceHolder and Item ~= SearchBar then
+                if Item.Name ~= "Placeholder" and Item ~= SearchBar then
                     if DropdownSettings.Items[Item] then
                         DropdownSettings.Items[Item].Option:Destroy()
                         table.remove(DropdownSettings.Items,
@@ -3768,7 +3914,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             UserInputService.InputBegan:Connect(
                 function(input, processed)
-
                     if CheckingForKey then
                         if input.KeyCode ~= Enum.KeyCode.Unknown and
                             input.KeyCode ~= Enum.KeyCode.RightShift then
@@ -3913,7 +4058,6 @@ function RayfieldLibrary:CreateWindow(Settings)
             function KeybindSettings:Visible(bool)
                 Keybind.Visible = bool
             end
-
             if Settings.ConfigurationSaving then
                 if Settings.ConfigurationSaving.Enabled and KeybindSettings.Flag then
                     RayfieldLibrary.Flags[KeybindSettings.Flag] =
@@ -4480,27 +4624,33 @@ function RayfieldLibrary:CreateWindow(Settings)
 
             game:GetService("UserInputService").InputEnded:Connect(function(
                 input, gameProcessed)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if (input.UserInputType == Enum.UserInputType.MouseButton1 or
+                    input.UserInputType == Enum.UserInputType.Touch) then
+                    TabPage.ScrollingEnabled = true
                     mainDragging = false
                     sliderDragging = false
                 end
             end)
             Main.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
+                    TabPage.ScrollingEnabled = false
                     mainDragging = true
                 end
             end)
             Main.MainPoint.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
+                    TabPage.ScrollingEnabled = false
                     mainDragging = true
                 end
             end)
             Slider.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
+                TabPage.ScrollingEnabled = false
                 sliderDragging = true
             end)
             Slider.SliderPoint.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
+                TabPage.ScrollingEnabled = false
                 sliderDragging = true
             end)
 
@@ -4874,7 +5024,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                 }):Play()
             end)
             Slider.Main.Interact.MouseLeave:Connect(function()
-                Dragging = false
+                -- Dragging = false
             end)
             Slider.MouseLeave:Connect(function()
                 TweenService:Create(Slider,
@@ -4889,8 +5039,10 @@ function RayfieldLibrary:CreateWindow(Settings)
                 local Start = Current
                 local Location = X
 
-                Location = UserInputService:GetMouseLocation().X
+                -- Location = UserInputService:GetMouseLocation().X
                 Current = Current + 0.025 * (Location - Start)
+
+                TabPage.ScrollingEnabled = false
 
                 if Location < Slider.Main.AbsolutePosition.X then
                     Location = Slider.Main.AbsolutePosition.X
@@ -4975,18 +5127,40 @@ function RayfieldLibrary:CreateWindow(Settings)
                     SaveConfiguration()
                 end
             end
-            Slider.Main.Interact.MouseButton1Down:Connect(function(X)
-                if not SliderSettings.Locked then
-                    UpdateSlider(X)
+            local InputBegan, Conduct
+            UserInputService.InputBegan:Connect(function(Input)
+                if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
+                    Input.UserInputType == Enum.UserInputType.Touch) then
+                    Conduct = true
+                    Input.Changed:Connect(function()
+                        if Input.UserInputState == Enum.UserInputState.End then
+                            Conduct = false
+                        end
+                    end)
+                end
+            end)
+            Slider.Main.Interact.InputBegan:Connect(function(Input)
+                if not SliderSettings.Locked and not Conduct then
+                    InputBegan = Input
+                    UpdateSlider(InputBegan.Position.X)
                     Dragging = true
                 end
             end)
-            Slider.Main.Interact.MouseButton1Up:Connect(function(X)
-                Dragging = false
+            UserInputService.InputEnded:Connect(function(Input)
+                if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
+                    Input.UserInputType == Enum.UserInputType.Touch) and
+                    Dragging then
+                    TabPage.ScrollingEnabled = true
+                    Dragging = false
+                end
             end)
             Slider.Main.Interact.MouseMoved:Connect(function(X)
                 if SliderSettings.Locked then return end
-                if Dragging then UpdateSlider(X) end
+                if (Input.UserInputType == Enum.UserInputType.MouseMovement or
+                    Input.UserInputType == Enum.UserInputType.Touch) and
+                    Dragging then
+                    UpdateSlider(InputBegan.Position.X)
+                end
             end)
 
             function SliderSettings:Set(NewVal)
@@ -5300,6 +5474,30 @@ Topbar.Hide.MouseButton1Click:Connect(function()
         Hide()
     end
 end)
+
+local ContextActionService = game:GetService("ContextActionService")
+
+ContextActionService:BindAction("Field",
+                                function(name, inputState, inputObject)
+    if Debounce then return end
+    if Hidden then
+        Hidden = false
+        Unhide()
+    else
+        if not SearchHided then spawn(CloseSearch) end
+        Hidden = true
+        Hide()
+    end
+end, true)
+
+local FieldScreen = Instance.new("ScreenGui")
+FieldScreen.Parent = gethui and gethui()
+
+local Field = ContextActionService:GetButton("Field")
+Field.Parent.Parent = FieldScreen
+Field.ActionTitle.Text = "ArrayField"
+Field.AnchorPoint = Vector2.new(1, 1)
+Field.Position = UDim2.new(0.95, 0, 0.95, 0)
 
 UserInputService.InputBegan:Connect(function(input, processed)
     if (input.KeyCode == Enum.KeyCode.Home or input.KeyCode ==
