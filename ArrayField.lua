@@ -2819,28 +2819,27 @@ function RayfieldLibrary:CreateWindow(Settings)
                                                                         .Quint),
                                             {Size = UDim2.new(0, 465, 0, 44)})
                             :Play()
-                        --[[for _, item in ipairs(Dropdown.List:GetChildren()) do
+                        for _, item in ipairs(Dropdown.List:GetChildren()) do
                             if item.ClassName == "Frame" and item.Name ~=
                                 "Template" and item.Name ~= "PlaceHolder" and
                                 item.Name ~= "-SearchBar" then
-                                TweenService:Create(DropdownOpt, TweenInfo.new(
-                                                        0.3,
-                                                        Enum.EasingStyle.Quint),
+                                TweenService:Create(item, TweenInfo.new(0.3,
+                                                                        Enum.EasingStyle
+                                                                            .Quint),
                                                     {BackgroundTransparency = 1})
                                     :Play()
-                                TweenService:Create(DropdownOpt.UIStroke,
+                                TweenService:Create(item.UIStroke,
                                                     TweenInfo.new(0.3,
                                                                   Enum.EasingStyle
                                                                       .Quint),
                                                     {Transparency = 1}):Play()
-                                TweenService:Create(DropdownOpt.Title,
-                                                    TweenInfo.new(0.3,
-                                                                  Enum.EasingStyle
-                                                                      .Quint),
+                                TweenService:Create(item.Title, TweenInfo.new(
+                                                        0.3,
+                                                        Enum.EasingStyle.Quint),
                                                     {TextTransparency = 1})
                                     :Play()
                             end
-                        end]] --
+                        end
                         TweenService:Create(Dropdown.List, TweenInfo.new(0.3,
                                                                          Enum.EasingStyle
                                                                              .Quint),
