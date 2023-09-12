@@ -121,7 +121,7 @@ if game["Run Service"]:IsStudio() then
 end
 
 pcall(function()
-    _G.LastRayField.Name = 'Old Arrayfield'
+    _G.LastRayField.Name = 'Old Rayfield'
     _G.LastRayField.Enabled = false
 end)
 local ParentObject = function(Gui)
@@ -2928,7 +2928,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                         end)
                         if not Success then
                             Error('Callback Error')
-                            print("ArrayField | " .. DropdownSettings.Name ..
+                            print("Rayfield | " .. DropdownSettings.Name ..
                                       " Callback Error " .. tostring(Response))
                         end
                         SaveConfiguration()
@@ -3144,7 +3144,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                 end)
                 if not Success then
                     Error('Callback Error')
-                    print("ArrayField | " .. DropdownSettings.Name ..
+                    print("Rayfield | " .. DropdownSettings.Name ..
                               " Callback Error " .. tostring(Response))
                 end
                 for _, option in ipairs(Dropdown.List:GetChildren()) do
