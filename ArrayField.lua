@@ -4626,31 +4626,26 @@ function RayfieldLibrary:CreateWindow(Settings)
                 input, gameProcessed)
                 if (input.UserInputType == Enum.UserInputType.MouseButton1 or
                     input.UserInputType == Enum.UserInputType.Touch) then
-                    TabPage.ScrollingEnabled = true
                     mainDragging = false
                     sliderDragging = false
                 end
             end)
             Main.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
-                    TabPage.ScrollingEnabled = false
                     mainDragging = true
                 end
             end)
             Main.MainPoint.MouseButton1Down:Connect(function()
                 if opened and not ColorPickerSettings.Locked then
-                    TabPage.ScrollingEnabled = false
                     mainDragging = true
                 end
             end)
             Slider.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
-                TabPage.ScrollingEnabled = false
                 sliderDragging = true
             end)
             Slider.SliderPoint.MouseButton1Down:Connect(function()
                 if ColorPickerSettings.Locked then return end
-                TabPage.ScrollingEnabled = false
                 sliderDragging = true
             end)
 
@@ -5024,7 +5019,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                 }):Play()
             end)
             Slider.Main.Interact.MouseLeave:Connect(function()
-                -- Dragging = false
+                Dragging = false
             end)
             Slider.MouseLeave:Connect(function()
                 TweenService:Create(Slider,
@@ -5039,10 +5034,8 @@ function RayfieldLibrary:CreateWindow(Settings)
                 local Start = Current
                 local Location = X
 
-                -- Location = UserInputService:GetMouseLocation().X
+                Location = UserInputService:GetMouseLocation().X
                 Current = Current + 0.025 * (Location - Start)
-
-                TabPage.ScrollingEnabled = false
 
                 if Location < Slider.Main.AbsolutePosition.X then
                     Location = Slider.Main.AbsolutePosition.X
@@ -5127,40 +5120,21 @@ function RayfieldLibrary:CreateWindow(Settings)
                     SaveConfiguration()
                 end
             end
-            local InputBegan, Conduct
-            UserInputService.InputBegan:Connect(function(Input)
-                if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
-                    Input.UserInputType == Enum.UserInputType.Touch) then
-                    Conduct = true
-                    Input.Changed:Connect(function()
-                        if Input.UserInputState == Enum.UserInputState.End then
-                            Conduct = false
-                        end
-                    end)
-                end
-            end)
-            Slider.Main.Interact.InputBegan:Connect(function(Input)
-                if not SliderSettings.Locked and not Conduct then
-                    InputBegan = Input
-                    UpdateSlider(InputBegan.Position.X)
+
+            Slider.Main.Interact.MouseButton1Down:Connect(function(X)
+                if not SliderSettings.Locked then
+                    UpdateSlider(X)
                     Dragging = true
                 end
             end)
-            UserInputService.InputEnded:Connect(function(Input)
-                if (Input.UserInputType == Enum.UserInputType.MouseButton1 or
-                    Input.UserInputType == Enum.UserInputType.Touch) and
-                    Dragging then
-                    TabPage.ScrollingEnabled = true
-                    Dragging = false
-                end
+
+            Slider.Main.Interact.MouseButton1Up:Connect(function(X)
+                Dragging = false
             end)
+
             Slider.Main.Interact.MouseMoved:Connect(function(X)
                 if SliderSettings.Locked then return end
-                if (Input.UserInputType == Enum.UserInputType.MouseMovement or
-                    Input.UserInputType == Enum.UserInputType.Touch) and
-                    Dragging then
-                    UpdateSlider(InputBegan.Position.X)
-                end
+                if Dragging then UpdateSlider(X) end
             end)
 
             function SliderSettings:Set(NewVal)
