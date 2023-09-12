@@ -2827,7 +2827,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                         TweenService:Create(Dropdown, TweenInfo.new(0.5,
                                                                     Enum.EasingStyle
                                                                         .Quint),
-                                            {Size = UDim2.new(1, -10, 0, 45)})
+                                            {Size = UDim2.new(0, 465, 0, 44)})
                             :Play()
                         for _, item in ipairs(Dropdown.List:GetChildren()) do
                             if item.ClassName == "Frame" and item.Name ~=
@@ -3017,7 +3017,7 @@ function RayfieldLibrary:CreateWindow(Settings)
             Dropdown.UIStroke.Transparency = 1
             Dropdown.Title.TextTransparency = 1
 
-            Dropdown.Size = UDim2.new(1, -10, 0, 45)
+            Dropdown.Size = UDim2.new(0, 465, 0, 44)
 
             TweenService:Create(Dropdown,
                                 TweenInfo.new(0.7, Enum.EasingStyle.Quint),
@@ -3062,7 +3062,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                     TweenService:Create(Dropdown, TweenInfo.new(0.5,
                                                                 Enum.EasingStyle
                                                                     .Quint),
-                                        {Size = UDim2.new(1, -10, 0, 45)})
+                                        {Size = UDim2.new(0, 465, 0, 44)})
                         :Play()
                     for _, DropdownOpt in ipairs(Dropdown.List:GetChildren()) do
                         if DropdownOpt.ClassName == "Frame" and DropdownOpt.Name ~=
@@ -3330,7 +3330,7 @@ function RayfieldLibrary:CreateWindow(Settings)
                         TweenService:Create(Dropdown, TweenInfo.new(0.5,
                                                                     Enum.EasingStyle
                                                                         .Quint),
-                                            {Size = UDim2.new(1, -10, 0, 45)})
+                                            {Size = UDim2.new(0, 465, 0, 44)})
                             :Play()
                         for _, DropdownOpt in
                             ipairs(Dropdown.List:GetChildren()) do
