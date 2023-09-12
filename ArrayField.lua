@@ -258,16 +258,6 @@ local function AddDraggingFunctionality(DragPoint, Main)
                                          FramePos.Y.Scale,
                                          FramePos.Y.Offset + Delta.Y)
                 }):Play()
-                TweenService:Create(InfoPrompt, TweenInfo.new(0.6,
-                                                              Enum.EasingStyle
-                                                                  .Quint,
-                                                              Enum.EasingDirection
-                                                                  .Out), {
-                    Position = UDim2.new(FramePos.X.Scale,
-                                         FramePos.X.Offset + Delta.X + 370,
-                                         FramePos.Y.Scale,
-                                         FramePos.Y.Offset + Delta.Y)
-                }):Play()
             end
         end)
     end)
